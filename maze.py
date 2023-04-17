@@ -21,13 +21,13 @@ playerPos = pygame.Vector2(9.5,9.5)
 playerDir = 0
 
 maze = []
-with open("map.csv", "r") as f:
+with open("assets/map.csv", "r") as f:
     for line in f:
         maze.append([int(i) for i in line.split(",")])
 maze = np.array(maze)
 
 assetdict = {}
-for texturefile in glob("*.png"):
+for texturefile in glob("assets/*.png"):
     idx = int(texturefile.split(".")[0].split("_")[1]) # textures must be formatted as "<name>_<index>.png" and will all be loaded in
     assetdict[idx] = texturefile
     
