@@ -51,14 +51,19 @@ def drawminimap(screen, maze, playerPos, playerDir, fov):
     pygame.draw.line(screen, "green", (1000+playerPos.x*5, 600+playerPos.y*5), (1000+playerPos.x*5+np.cos(playerDir+fov/2)*10, 600+playerPos.y*5+np.sin(playerDir+fov/2)*10), 2)
     pygame.draw.line(screen, "green", (1000+playerPos.x*5, 600+playerPos.y*5), (1000+playerPos.x*5+np.cos(playerDir-fov/2)*10, 600+playerPos.y*5+np.sin(playerDir-fov/2)*10), 2)
     
+# Prepare a background with a gradient    
+background = pygame.Surface((1280, 720))
+for y in range(360):
+    pygame.draw.line(background, (0,0,128), (0, y), (1280, y), 2)
+    col = int(255 - y/300*255)
+    pygame.draw.line(background, (max(0,col), max(0,col), max(0,col)), (0, 720-y), (1280, 720-y), 2)
 
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-
-    screen.fill("blue")
-    pygame.draw.rect(screen, "grey", (0, 360, 1280, 360))
+            
+    screen.blit(background, (0,0))
 
     for col in range(0, 1280, pixelStep):
         ray = playerDir + (col-640)/(1280/fov) # Angle of ray
@@ -93,10 +98,16 @@ while running:
         wallpos *= 512
 
         height = 360/distance
+        
+        # Shade and draw the column
+        dark = pygame.Surface((pixelStep, 512))
+        dark.fill((0,0,0))
         texture = pygame.Surface((pixelStep, 512))
+        texture.set_alpha(255/distance)
         texture.blit(walls[maze[gridx, gridy]-1], (0,0), (wallpos, 0, pixelStep, 512))
+        dark.blit(texture, (0,0))
 
-        screen.blit(pygame.transform.scale_by(texture, (1,(height*2)/512)), (col, 360-height))
+        screen.blit(pygame.transform.scale_by(dark, (1,(height*2)/512)), (col, 360-height))
     
     drawminimap(screen, maze, playerPos, playerDir, fov)
     
